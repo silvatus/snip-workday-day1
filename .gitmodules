@@ -10,3 +10,7 @@
 	path = cli
 	url = https://github.com/silvatus/snip-workday-day1
 	branch = cli
+[submodule "bundle"]
+	path = bundle
+	url = https://github.com/silvatus/snip-workday-day1
+	branch = bundle
