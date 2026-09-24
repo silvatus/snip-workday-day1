@@ -3,7 +3,7 @@ import { resolve, sep } from "node:path";
 const port = Number(process.env.PORT || 3000);
 const publicDir = process.env.PUBLIC_DIR || null;
 const resolvedPublicDir = publicDir ? resolve(publicDir) : null;
-const baseUrl = process.env.BASE_URL || (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : `http://localhost:${port}`);
+const configuredBaseUrl = process.env.BASE_URL || (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : null);
 const links = new Map();
 
 const corsHeaders = {
@@ -35,6 +35,18 @@ function generateCode(length = 6) {
   } while (links.has(code));
 
   return code;
+}
+
+function getBaseUrl(requestUrl, headers) {
+  if (configuredBaseUrl) return configuredBaseUrl.replace(/\/$/, "");
+
+  const forwardedHost = headers.get("x-forwarded-host");
+  if (forwardedHost) {
+    const protocol = headers.get("x-forwarded-proto") || "https";
+    return `${protocol}://${forwardedHost}`;
+  }
+
+  return requestUrl.origin;
 }
 
 async function serveStaticFile(pathname) {
@@ -117,7 +129,7 @@ const server = Bun.serve({
         const record = {
           code,
           url: parsedUrl.toString(),
-          shortUrl: `${baseUrl}/${code}`,
+          shortUrl: `${getBaseUrl(url, request.headers)}/${code}`,
           hits: 0,
           createdAt,
         };
