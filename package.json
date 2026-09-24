@@ -1,7 +1,14 @@
 {
-  "name": "snip-backend",
+  "name": "snip-cli",
+  "version": "1.0.0",
   "private": true,
+  "bin": {
+    "snip": "cli.js"
+  },
   "scripts": {
-    "start": "bun run server.js"
+    "start": "node cli.js"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

@@ -1,24 +1,70 @@
-# Snip backend
+# Snip CLI
 
-This is the backend for the Snip tiny URL shortener demo.
-
-## Run
+A zero-dependency Node.js client for the Snip URL shortener.
 
 ```bash
-bun start
+node cli.js add https://example.com/long-url
+node cli.js ls
+node cli.js open abc123
 ```
 
-The service listens on port `3000` by default and stores links in memory.
+The CLI requires Node.js 18 or newer. Set `SNIP_API` to change the backend URL from
+the default `http://localhost:3000`.# SnipFrontend
 
-## API
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.27.
 
-- `POST /api/links` with `{ "url": "https://example.com" }` creates a short link.
-- `GET /api/links` lists all links.
-- `GET /:code` redirects to the original URL and increments its hit count.
+## Development server
 
-## Configuration
+To start a local development server, run:
 
-- `PORT` changes the listening port.
-- `BASE_URL` sets the origin used in generated short URLs.
-- `RAILWAY_PUBLIC_DOMAIN` supplies an HTTPS origin when `BASE_URL` is unset.
-- `PUBLIC_DIR` enables static file serving, including `index.html` at `/`.
+```bash
+ng serve
+```
+
+Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+
+## Code scaffolding
+
+Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+
+```bash
+ng generate component component-name
+```
+
+For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+
+```bash
+ng generate --help
+```
+
+## Building
+
+To build the project run:
+
+```bash
+ng build
+```
+
+This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+
+## Running unit tests
+
+To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+
+```bash
+ng test
+```
+
+## Running end-to-end tests
+
+For end-to-end (e2e) testing, run:
+
+```bash
+ng e2e
+```
+
+Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+
+## Additional Resources
+
+For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
