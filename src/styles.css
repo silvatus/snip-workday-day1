@@ -1,0 +1,30 @@
+:root {
+	--paper: #f7f6f2;
+	--ink: #18201d;
+	--muted: #68716d;
+	--line: #cbd0cc;
+	--accent: #c13c24;
+	--success: #2d7650;
+	color: var(--ink);
+	background-color: var(--paper);
+	font-family: "Trebuchet MS", sans-serif;
+	font-synthesis: none;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	min-width: 20rem;
+	min-height: 100vh;
+	margin: 0;
+	background-image: linear-gradient(rgba(24, 32, 29, 0.025) 1px, transparent 1px);
+	background-size: 100% 2rem;
+}
+
+a:focus-visible,
+button:focus-visible {
+	outline: 3px solid color-mix(in srgb, var(--accent) 35%, transparent);
+	outline-offset: 3px;
+}

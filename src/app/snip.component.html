@@ -1,0 +1,86 @@
+<main>
+  <header>
+    <a class="brand" href="/" aria-label="Snip home">snip<span>.</span></a>
+    <p>Tiny links, clearly tracked.</p>
+  </header>
+
+  <section class="creator" aria-labelledby="create-heading">
+    <div>
+      <p class="eyebrow">New short link</p>
+      <h1 id="create-heading">Make a long URL easier to share.</h1>
+    </div>
+
+    <form (submit)="submit($event, urlInput)" novalidate>
+      <label for="url">Paste a URL</label>
+      <div class="input-row">
+        <input
+          #urlInput
+          id="url"
+          name="url"
+          type="url"
+          placeholder="https://example.com/long-link"
+          autocomplete="url"
+          [disabled]="submitting()"
+        />
+        <button type="submit" [disabled]="submitting()">
+          {{ submitting() ? 'Creating...' : 'Shorten' }}
+        </button>
+      </div>
+    </form>
+
+    @if (latestLink(); as link) {
+      <p class="notice success" role="status">
+        Ready: <a [href]="link.shortUrl" target="_blank" rel="noreferrer">{{ link.shortUrl }}</a>
+      </p>
+    }
+
+    @if (error()) {
+      <p class="notice error" role="alert">{{ error() }}</p>
+    }
+  </section>
+
+  <section class="links" aria-labelledby="links-heading">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Library</p>
+        <h2 id="links-heading">All links</h2>
+      </div>
+      <span>{{ links().length }} total</span>
+    </div>
+
+    @if (loading()) {
+      <p class="empty">Loading links...</p>
+    } @else if (links().length === 0) {
+      <p class="empty">No links yet. Create the first one above.</p>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Short code</th>
+              <th scope="col">Original URL</th>
+              <th scope="col" class="hits">Hits</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (link of links(); track link.code) {
+              <tr>
+                <td>
+                  <a class="code" [href]="link.shortUrl" target="_blank" rel="noreferrer">
+                    {{ link.code }}
+                  </a>
+                </td>
+                <td>
+                  <a class="original" [href]="link.url" target="_blank" rel="noreferrer">
+                    {{ link.url }}
+                  </a>
+                </td>
+                <td class="hits">{{ link.hits }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</main>
