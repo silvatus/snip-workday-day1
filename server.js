@@ -1,5 +1,8 @@
+import { resolve, sep } from "node:path";
+
 const port = Number(process.env.PORT || 3000);
 const publicDir = process.env.PUBLIC_DIR || null;
+const resolvedPublicDir = publicDir ? resolve(publicDir) : null;
 const baseUrl = process.env.BASE_URL || (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : `http://localhost:${port}`);
 const links = new Map();
 
@@ -21,31 +24,42 @@ function jsonResponse(body, status = 200) {
 
 function generateCode(length = 6) {
   const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  let value = "";
+  let code;
 
-  for (let i = 0; i < length; i += 1) {
-    value += chars[Math.floor(Math.random() * chars.length)];
-  }
+  do {
+    code = "";
 
-  return value;
+    for (let i = 0; i < length; i += 1) {
+      code += chars[Math.floor(Math.random() * chars.length)];
+    }
+  } while (links.has(code));
+
+  return code;
 }
 
 async function serveStaticFile(pathname) {
-  if (!publicDir) return null;
+  if (!resolvedPublicDir) return null;
 
-  const safePath = pathname === "/" ? "/index.html" : pathname;
-  const normalized = safePath.split("/").filter(Boolean);
-  const filePath = normalized.length === 0 ? "index.html" : normalized.join("/");
-  const target = `${publicDir}/${filePath}`;
+  let filePath;
+
+  try {
+    filePath = decodeURIComponent(pathname === "/" ? "index.html" : pathname.slice(1));
+  } catch {
+    return null;
+  }
+
+  const target = resolve(resolvedPublicDir, filePath);
+  if (target !== resolvedPublicDir && !target.startsWith(`${resolvedPublicDir}${sep}`)) {
+    return null;
+  }
 
   try {
     const file = Bun.file(target);
     if (await file.exists()) {
-      const mime = filePath.endsWith(".html") ? "text/html; charset=utf-8" : "application/octet-stream";
       return new Response(file, {
         headers: {
           ...corsHeaders,
-          "Content-Type": mime,
+          "Content-Type": file.type || "application/octet-stream",
         },
       });
     }
@@ -134,7 +148,13 @@ const server = Bun.serve({
       }
 
       link.hits += 1;
-      return Response.redirect(link.url, 302);
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          Location: link.url,
+        },
+      });
     }
 
     return jsonResponse({ error: "Not found" }, 404);
